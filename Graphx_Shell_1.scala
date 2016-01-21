@@ -1,9 +1,3 @@
-All of this falls under a branch of mathematics called graph theory.
-GraphX is built upon a branch of mathematics called graph theory.
-
-PageRank
-
-
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 //airlines
@@ -63,10 +57,10 @@ val ranks = graph.pageRank(0.1).vertices
 ranks.take(3)
 //res0: Array[(org.apache.spark.graphx.VertexId, Double)] = Array((2,0.47799375), (1,0.47799375), (3,0.47799375))
 
-val ranksAndAirports = ranks.join(vRDD).sortBy(_._2._1, false).map(_._2._2)
+val impAirports = ranks.join(vRDD).sortBy(_._2._1, false).map(_._2._2)
 //ranksAndAirports: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[286] at map at <console>:44
 
-ranksAndAirports.collect.foreach(println)
+impAirports.collect.foreach(println)
 //ORD
 //SFO
 //DFW

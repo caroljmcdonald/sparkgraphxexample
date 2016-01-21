@@ -70,6 +70,12 @@ graph.triplets.take(3).foreach(println)
 ((10135,ABE),(13930,ORD),654)
 ((10140,ABQ),(10397,ATL),1269)
 
+// What are the top 10 flights from airport to airport?
+graph.triplets.sortBy(_.attr, ascending=false).map(triplet =>
+        "There were " + triplet.attr.toString + " flights from " + triplet.srcAttr + " to " + triplet.dstAttr + ".").take(10)
+//res15: Array[String] = Array(There were 4983 flights from JFK to HNL., There were 4983 flights from HNL to JFK., There were 4963 flights from EWR to HNL., There were 4963 flights from HNL to EWR., There were 4817 flights from HNL to IAD., There were 4817 flights from IAD to HNL., There were 4502 flights from ATL to HNL., There were 4502 flights from HNL to ATL., There were 4243 flights from HNL to ORD., There were 4243 flights from ORD to HNL.)
+
+
 // Define a reduce operation to compute the highest degree vertex
 def max(a: (VertexId, Int), b: (VertexId, Int)): (VertexId, Int) = {
   if (a._2 > b._2) a else b
@@ -109,17 +115,19 @@ maxOutgoing.foreach(println)
 (ORD,145)
 (DFW,143)
 
-// What are the top 10 flights from airport to airport?
-graph.triplets.sortBy(_.attr, ascending=false).map(triplet =>
-        "There were " + triplet.attr.toString + " flights from " + triplet.srcAttr + " to " + triplet.dstAttr + ".").take(10)
-res15: Array[String] = Array(There were 4983 flights from JFK to HNL., There were 4983 flights from HNL to JFK., There were 4963 flights from EWR to HNL., There were 4963 flights from HNL to EWR., There were 4817 flights from HNL to IAD., There were 4817 flights from IAD to HNL., There were 4502 flights from ATL to HNL., There were 4502 flights from HNL to ATL., There were 4243 flights from HNL to ORD., There were 4243 flights from ORD to HNL.)
 
+//What are the most important airports according to PageRank?
+// use pageRank
+val ranks = graph.pageRank(0.1).vertices
+
+val impAirports = ranks.join(airports).sortBy(_._2._1, false).map(_._2._2)
+impAirports.take(4)
+//res6: Array[String] = Array(ATL, ORD, DFW, DEN)
+
+ graph.edges.filter { case ( Edge(org_id, dest_id,distance))=> distance > 1000}.take(3)
 
 val sourceId: VertexId = 13024
 // 50 + distance / 20 
- graph.edges.filter { case ( Edge(org_id, dest_id,distance))=> distance > 1000}.take(3)
- val gg = graph.mapEdges(e=> e.distance > 1000)
-
 val gg = graph.mapEdges(e => 50.toDouble + e.attr.toDouble/20  )
 val initialGraph = gg.mapVertices((id, _) => if (id == sourceId) 0.0 else Double.PositiveInfinity)
 
@@ -140,11 +148,16 @@ println(sssp.vertices.take(4).mkString("\n"))
 (14828,261.65)
 (14698,125.25)
 
-scala> println(sssp.edges.take(4).mkString("\n"))
+println(sssp.edges.take(4).mkString("\n"))
 Edge(10135,10397,84.6)
 Edge(10135,13930,82.7)
 Edge(10140,10397,113.45)
 Edge(10140,10821,133.5)
+
+sssp.edges.map{ case ( Edge(org_id, dest_id,price))=> ( (airportMap(org_id), airportMap(dest_id), price)) }.top(4)(Ordering.by(_._3))
+
+sssp.edges.map{ case ( Edge(org_id, dest_id,price))=> ( (airportMap(org_id), airportMap(dest_id), price)) }.takeOrdered(10)(Ordering.by(_._3))
+res21: Array[(String, String, Double)] = Array((WRG,PSG,51.55), (PSG,WRG,51.55), (CEC,ACV,52.8), (ACV,CEC,52.8), (ORD,MKE,53.35), (IMT,RHI,53.35), (MKE,ORD,53.35), (RHI,IMT,53.35), (STT,SJU,53.4), (SJU,STT,53.4))
 
 sssp.vertices.collect.map(x => (airportMap(x._1), x._2)).sortWith(_._2 < _._2)
 res21: Array[(String, Double)] = Array((LMT,0.0), (PDX,62.05), (SFO,65.75), (EUG,117.35)
