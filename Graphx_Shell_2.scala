@@ -70,10 +70,20 @@ graph.triplets.take(3).foreach(println)
 ((10135,ABE),(13930,ORD),654)
 ((10140,ABQ),(10397,ATL),1269)
 
-// What are the top 10 flights from airport to airport?
+//Sort and print out the longest distance routes
 graph.triplets.sortBy(_.attr, ascending=false).map(triplet =>
-        "There were " + triplet.attr.toString + " flights from " + triplet.srcAttr + " to " + triplet.dstAttr + ".").take(10)
-//res15: Array[String] = Array(There were 4983 flights from JFK to HNL., There were 4983 flights from HNL to JFK., There were 4963 flights from EWR to HNL., There were 4963 flights from HNL to EWR., There were 4817 flights from HNL to IAD., There were 4817 flights from IAD to HNL., There were 4502 flights from ATL to HNL., There were 4502 flights from HNL to ATL., There were 4243 flights from HNL to ORD., There were 4243 flights from ORD to HNL.)
+         "Distance " + triplet.attr.toString + " from " + triplet.srcAttr + " to " + triplet.dstAttr + ".").take(10).foreach(println)
+
+Distance 4983 from JFK to HNL.
+Distance 4983 from HNL to JFK.
+Distance 4963 from EWR to HNL.
+Distance 4963 from HNL to EWR.
+Distance 4817 from HNL to IAD.
+Distance 4817 from IAD to HNL.
+Distance 4502 from ATL to HNL.
+Distance 4502 from HNL to ATL.
+Distance 4243 from HNL to ORD.
+Distance 4243 from ORD to HNL.
 
 
 // Define a reduce operation to compute the highest degree vertex
